@@ -1,0 +1,43 @@
+appId: com.open-dmx.console
+productName: Open DMX Console
+artifactName: Open-DMX-Console-${version}-${os}-${arch}.${ext}
+
+directories:
+  output: release
+
+files:
+  - dist/**/*
+  - dist-desktop/**/*
+  - package.json
+
+asar: true
+asarUnpack:
+  - node_modules/ftdi-d2xx/**/*
+  - node_modules/serialport/**/*
+  - node_modules/@serialport/**/*
+
+# Both USB libraries ship prebuilt native binaries. Rebuilding them against
+# Electron is unnecessary and makes cross-platform packaging less reliable.
+npmRebuild: false
+
+mac:
+  category: public.app-category.utilities
+  target:
+    - dmg
+    - zip
+
+win:
+  target:
+    - nsis
+    - portable
+
+nsis:
+  artifactName: Open-DMX-Console-${version}-win-${arch}-setup.${ext}
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  runAfterFinish: true
+
+portable:
+  artifactName: Open-DMX-Console-${version}-win-${arch}-portable.${ext}

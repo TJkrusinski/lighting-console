@@ -1,0 +1,63 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+import { fixtureProfiles, getMode } from "../lib/fixture-profiles";
+import { validatePatch } from "../lib/console-validation";
+import { interpolateUniverse, parseConsoleBackup } from "../server/console-engine";
+
+test("ships the verified DMX fixture library", () => {
+  assert.deepEqual(
+    fixtureProfiles.map((profile) => profile.model),
+    ["F21x", "F200Bi K2", "F600Bi", "STORM 80c", "STORM 700x"],
+  );
+  assert.equal(getMode("amaran-f21x", "cct-8")?.footprint, 2);
+  assert.equal(getMode("aputure-storm-80c", "cct-rgb-8")?.footprint, 7);
+  assert.equal(getMode("godox-f200bi-k2", "ultimate-8")?.footprint, 6);
+  assert.equal(getMode("aputure-storm-700x", "profile-5-cct-fx-control-8")?.footprint, 11);
+});
+
+test("patch validation permits overlaps and any starting channel", () => {
+  const base = { profileId: "amaran-f21x", modeId: "cct-8" };
+  assert.deepEqual(validatePatch([
+    { id: "a", name: "Key", address: 1, ...base },
+    { id: "b", name: "Fill", address: 3, ...base },
+  ]), []);
+  assert.deepEqual(validatePatch([
+    { id: "a", name: "Key", address: 1, ...base },
+    { id: "b", name: "Fill", address: 2, ...base },
+  ]), []);
+  assert.deepEqual(validatePatch([
+    { id: "a", name: "Key", address: 512, ...base },
+  ]), []);
+  assert.match(validatePatch([
+    { id: "a", name: "Key", address: 513, ...base },
+  ])[0], /1 to 512/);
+});
+
+test("fades linearly and always returns one complete DMX universe", () => {
+  const halfway = interpolateUniverse([0, 255], [255, 0], 0.5);
+  assert.equal(halfway.length, 512);
+  assert.equal(halfway[0], 128);
+  assert.equal(halfway[1], 128);
+  assert.equal(halfway[511], 0);
+});
+
+test("console backups restore the complete validated state", () => {
+  const values = Array.from({ length: 512 }, () => 12);
+  const state = parseConsoleBackup({
+    format: "open-dmx-console",
+    version: 1,
+    exportedAt: "2026-08-11T12:00:00.000Z",
+    state: {
+      fixtures: [{ id: "key", name: "Key", profileId: "amaran-f21x", modeId: "cct-8", address: 1 }],
+      presets: [{ id: "look", name: "Interview", createdAt: "2026-08-11T12:00:00.000Z", values }],
+      liveValues: values,
+      transitionMs: 2500,
+    },
+  });
+
+  assert.equal(state.fixtures[0].name, "Key");
+  assert.equal(state.presets[0].values.length, 512);
+  assert.equal(state.liveValues[511], 12);
+  assert.equal(state.transitionMs, 2500);
+  assert.throws(() => parseConsoleBackup({ fixtures: [], presets: [], liveValues: [0], transitionMs: 0 }), /512/);
+});
