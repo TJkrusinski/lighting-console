@@ -34,6 +34,10 @@ function displayValue(channel: ChannelDefinition, value: number) {
   return `${scaled}${channel.unit ?? ""}`;
 }
 
+function clampDmxValue(value: number) {
+  return Math.max(0, Math.min(255, Math.round(value)));
+}
+
 function fixtureRange(profiles: FixtureProfile[], fixture: PatchedFixture) {
   const mode = modeFor(profiles, fixture);
   return `${fixture.address}–${fixture.address + (mode?.footprint ?? 1) - 1}`;
@@ -667,14 +671,63 @@ function FixtureControls({ fixture, fixtureIndex, snapshot, setChannel }: { fixt
           const universeChannel = fixture.address + channel.offset - 1;
           const value = snapshot.liveValues[universeChannel - 1] ?? 0;
           return (
-            <label className={`channel channel-${channel.kind}`} key={channel.offset}>
-              <div><span>{channel.name}</span><small>CH {universeChannel} · {channel.shortName}</small></div>
+            <div className={`channel channel-${channel.kind}`} key={channel.offset}>
+              <div className="channel-label"><span>{channel.name}</span><small>CH {universeChannel} · {channel.shortName}</small></div>
               <input type="range" min="0" max="255" value={value} onChange={(event) => setChannel(universeChannel, Number(event.target.value))} aria-label={`${fixture.name} ${channel.name}`} />
-              <output>{displayValue(channel, value)}<small>{channel.displayMin === undefined ? "DMX" : `DMX ${value}`}</small></output>
-            </label>
+              <div className="channel-readout">
+                {channel.displayMin !== undefined && <output>{displayValue(channel, value)}<small>Display</small></output>}
+                <DmxValueInput
+                  channelName={channel.name}
+                  fixtureName={fixture.name}
+                  universeChannel={universeChannel}
+                  value={value}
+                  setChannel={setChannel}
+                />
+              </div>
+            </div>
           );
         })}
       </div>
     </article>
+  );
+}
+
+function DmxValueInput({
+  channelName,
+  fixtureName,
+  universeChannel,
+  value,
+  setChannel,
+}: {
+  channelName: string;
+  fixtureName: string;
+  universeChannel: number;
+  value: number;
+  setChannel: (channel: number, value: number) => void;
+}) {
+  return (
+    <label className="dmx-value-input">
+      <span>DMX</span>
+      <input
+        type="number"
+        min="0"
+        max="255"
+        step="1"
+        inputMode="numeric"
+        value={value}
+        aria-label={`${fixtureName} ${channelName} DMX value`}
+        onBlur={(event) => {
+          event.currentTarget.value = `${value}`;
+        }}
+        onChange={(event) => {
+          const nextValue = event.currentTarget.valueAsNumber;
+          if (Number.isFinite(nextValue)) setChannel(universeChannel, clampDmxValue(nextValue));
+        }}
+        onFocus={(event) => event.currentTarget.select()}
+        onKeyDown={(event) => {
+          if (event.key === "Enter") event.currentTarget.blur();
+        }}
+      />
+    </label>
   );
 }
