@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { createClientId } from "@/lib/client-id";
 import type {
   ChannelDefinition,
   ConsoleSnapshot,
@@ -122,7 +123,7 @@ export function ConsoleApp() {
     if (!snapshot || !profile.dmxCapable || profile.modes.length === 0) return;
     const nextNumber = snapshot.fixtures.filter((fixture) => fixture.profileId === profile.id).length + 1;
     const fixture: PatchedFixture = {
-      id: crypto.randomUUID(),
+      id: createClientId(),
       name: `${profile.model} ${nextNumber}`,
       profileId: profile.id,
       modeId: profile.modes[0].id,

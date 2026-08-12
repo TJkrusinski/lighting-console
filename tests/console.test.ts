@@ -1,8 +1,21 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { createClientId } from "../lib/client-id";
 import { fixtureProfiles, getMode } from "../lib/fixture-profiles";
 import { validatePatch } from "../lib/console-validation";
 import { interpolateUniverse, parseConsoleBackup } from "../server/console-engine";
+
+test("creates browser IDs when randomUUID is unavailable", () => {
+  const deterministicCrypto = {
+    getRandomValues(bytes: Uint8Array) {
+      bytes.fill(0xab);
+      return bytes;
+    },
+  } as unknown as Crypto;
+
+  assert.equal(createClientId(deterministicCrypto), "abababab-abab-4bab-abab-abababababab");
+  assert.match(createClientId(null), /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
+});
 
 test("ships the verified DMX fixture library", () => {
   assert.deepEqual(
