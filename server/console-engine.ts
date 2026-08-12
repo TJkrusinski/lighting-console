@@ -91,6 +91,13 @@ export function interpolateUniverse(start: number[], target: number[], progress:
   });
 }
 
+export function overwritePresetValues(presets: Preset[], id: string, liveValues: number[]) {
+  const preset = presets.find((candidate) => candidate.id === id);
+  if (!preset) throw new Error("Preset not found.");
+  preset.values = Array.from({ length: 512 }, (_, index) => clampByte(liveValues[index] ?? 0));
+  return preset;
+}
+
 export class ConsoleEngine {
   private state!: PersistedConsoleState;
   private output = new OpenDmxOutput();
@@ -162,6 +169,12 @@ export class ConsoleEngine {
     this.state.presets.push(preset);
     await this.persist();
     return preset;
+  }
+
+  async overwritePreset(id: string) {
+    overwritePresetValues(this.state.presets, id, this.state.liveValues);
+    await this.persist();
+    return this.snapshot();
   }
 
   async deletePreset(id: string) {

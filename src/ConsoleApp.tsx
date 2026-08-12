@@ -177,6 +177,22 @@ export function ConsoleApp() {
     }
   };
 
+  const overwritePreset = async (presetId: string, presetName: string) => {
+    if (!window.confirm(`Overwrite "${presetName}" with the current live values?`)) return;
+    setSaving(true);
+    try {
+      const next = await api<ConsoleSnapshot & { ok: boolean }>(`/api/console/presets/${presetId}/overwrite`, {
+        method: "POST",
+      });
+      setSnapshot(next);
+      setError("");
+    } catch (requestError) {
+      setError(requestError instanceof Error ? requestError.message : String(requestError));
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const deletePreset = async (presetId: string) => {
     try {
       const next = await api<ConsoleSnapshot & { ok: boolean }>(`/api/console/presets/${presetId}`, {
@@ -297,6 +313,7 @@ export function ConsoleApp() {
           setTransition={setTransition}
           capturePreset={capturePreset}
           recallPreset={recallPreset}
+          overwritePreset={overwritePreset}
           deletePreset={deletePreset}
         />
       ) : (
@@ -600,6 +617,7 @@ function PresetManager({
   setTransition,
   capturePreset,
   recallPreset,
+  overwritePreset,
   deletePreset,
 }: {
   snapshot: ConsoleSnapshot;
@@ -612,6 +630,7 @@ function PresetManager({
   setTransition: (seconds: number) => void;
   capturePreset: () => void;
   recallPreset: (id: string) => void;
+  overwritePreset: (id: string, name: string) => void;
   deletePreset: (id: string) => void;
 }) {
   return (
@@ -649,6 +668,7 @@ function PresetManager({
                 </button>
                 <div className="preset-meta">
                   <code title="Companion HTTP URL">{origin}/api/companion/recall/{preset.id}?seconds={snapshot.transitionMs / 1000}</code>
+                  <button className="preset-overwrite" onClick={() => overwritePreset(preset.id, preset.name)} disabled={saving} aria-label={`Overwrite ${preset.name} with current live values`}>Overwrite</button>
                   <button onClick={() => deletePreset(preset.id)} aria-label={`Delete ${preset.name}`}>Delete</button>
                 </div>
               </article>

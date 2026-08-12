@@ -177,6 +177,7 @@ Additional application endpoints:
 | `POST` | `/api/console/fixtures` | Replace the fixture patch |
 | `POST` | `/api/console/presets` | Capture a preset with `{ "name": "Interview" }` |
 | `GET/POST` | `/api/console/presets/:id/recall` | Recall a preset |
+| `POST` | `/api/console/presets/:id/overwrite` | Replace a preset's values with the current live universe |
 | `DELETE` | `/api/console/presets/:id` | Delete a preset |
 | `GET` | `/api/console/health` | DMX device health |
 | `GET` | `/api/console/export` | Download the complete console state as JSON |

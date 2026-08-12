@@ -116,6 +116,12 @@ export function createApiRouter() {
   router.get("/console/presets/:id/recall", recallConsolePreset);
   router.post("/console/presets/:id/recall", recallConsolePreset);
 
+  router.post("/console/presets/:id/overwrite", asyncRoute(async (request, response) => {
+    const engine = await getConsoleEngine();
+    const snapshot = await engine.overwritePreset(String(request.params.id));
+    response.json({ ok: true, ...snapshot });
+  }));
+
   router.delete("/console/presets/:id", asyncRoute(async (request, response) => {
     const engine = await getConsoleEngine();
     const snapshot = await engine.deletePreset(String(request.params.id));

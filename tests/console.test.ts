@@ -3,7 +3,7 @@ import test from "node:test";
 import { createClientId } from "../lib/client-id";
 import { fixtureProfiles, getMode } from "../lib/fixture-profiles";
 import { validatePatch } from "../lib/console-validation";
-import { interpolateUniverse, parseConsoleBackup } from "../server/console-engine";
+import { interpolateUniverse, overwritePresetValues, parseConsoleBackup } from "../server/console-engine";
 
 test("creates browser IDs when randomUUID is unavailable", () => {
   const deterministicCrypto = {
@@ -52,6 +52,23 @@ test("fades linearly and always returns one complete DMX universe", () => {
   assert.equal(halfway[0], 128);
   assert.equal(halfway[1], 128);
   assert.equal(halfway[511], 0);
+});
+
+test("overwrites only a preset's captured values", () => {
+  const createdAt = "2026-08-11T12:00:00.000Z";
+  const presets = [{ id: "look", name: "Interview", createdAt, values: Array(512).fill(0) }];
+  const liveValues = Array(512).fill(0);
+  liveValues[0] = 123;
+
+  const overwritten = overwritePresetValues(presets, "look", liveValues);
+
+  assert.equal(overwritten.id, "look");
+  assert.equal(overwritten.name, "Interview");
+  assert.equal(overwritten.createdAt, createdAt);
+  assert.equal(overwritten.values[0], 123);
+  liveValues[0] = 255;
+  assert.equal(overwritten.values[0], 123);
+  assert.throws(() => overwritePresetValues(presets, "missing", liveValues), /not found/i);
 });
 
 test("console backups restore the complete validated state", () => {
