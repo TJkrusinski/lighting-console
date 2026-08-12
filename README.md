@@ -48,9 +48,12 @@ Install dependencies once, then build on the target operating system:
 
 ```bash
 npm install
+npm run desktop:install # build and install for this computer
 npm run desktop:mac   # macOS: Apple Silicon + Intel DMG and ZIP
 npm run desktop:win   # Windows: NSIS installer and portable EXE
 ```
+
+`npm run desktop:install` builds only the current machine's required application, then installs it in `/Applications` on macOS or runs the Windows per-user installer silently. Quit and reopen an already-running copy to start the new version. Set `OPEN_DMX_INSTALL_DIR` to override the destination directory.
 
 Artifacts are written to `release/`. `npm run desktop:dist` builds the configured artifacts for the current operating system, while `npm run desktop:dir` creates an unpacked application for quick local testing.
 

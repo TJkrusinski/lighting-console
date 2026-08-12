@@ -16,6 +16,7 @@
     "desktop:run": "npm run desktop:build && electron .",
     "desktop:dir": "npm run desktop:build && electron-builder --dir --publish never",
     "desktop:dist": "npm run desktop:build && electron-builder --publish never",
+    "desktop:install": "npm run desktop:build && node scripts/install-desktop.mjs",
     "desktop:mac": "npm run desktop:build && electron-builder --mac dmg zip --arm64 --x64 --publish never",
     "desktop:win": "npm run desktop:build && electron-builder --win nsis portable --x64 --publish never",
     "start": "node dist-server/index.js",
