@@ -168,16 +168,18 @@ button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible
 .preset-list { border-top: 1px solid var(--line); }
 .preset-empty { padding: 18px 10px; color: var(--muted); font-size: 9px; }
 .preset-card { border-bottom: 1px solid #cacbc4; background: var(--field); }
+.preset-actions { display: grid; grid-template-columns: minmax(0, 1fr) auto; }
 .preset-recall { display: grid; grid-template-columns: 28px 1fr auto; align-items: center; width: 100%; min-height: 41px; padding: 0 10px; border: 0; background: transparent; text-align: left; }
 .preset-recall:hover { background: #f5e7ae; }
 .preset-recall > span { color: #785e00; font: 8px var(--mono); }
 .preset-recall strong { overflow: hidden; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
 .preset-recall small { color: #715800; font-size: 8px; font-weight: 800; text-transform: uppercase; }
-.preset-meta { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 8px; padding: 4px 8px 5px 38px; border-top: 1px solid #e1e1db; background: #edede7; }
+.preset-actions > .preset-overwrite { min-width: 77px; padding: 0 10px; color: #201b0d; border: 0; border-left: 1px solid #c79700; background: var(--yellow); font-size: 8px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; }
+.preset-actions > .preset-overwrite:hover:not(:disabled) { background: #f1c226; }
+.preset-actions > .preset-overwrite:disabled { cursor: wait; opacity: .45; }
+.preset-meta { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 8px; padding: 4px 8px 5px 38px; border-top: 1px solid #e1e1db; background: #edede7; }
 .preset-meta code { overflow: hidden; color: #686e67; font-size: 7px; text-overflow: ellipsis; white-space: nowrap; }
 .preset-meta button { padding: 2px 0; color: #8b322b; border: 0; background: transparent; font-size: 8px; }
-.preset-meta .preset-overwrite { color: #715800; font-weight: 800; }
-.preset-meta button:disabled { cursor: wait; opacity: .45; }
 .companion-note { display: flex; justify-content: space-between; gap: 8px; padding: 9px 10px; color: #fff; border-top: 1px solid #3c403c; background: var(--black); }
 .companion-note strong { color: var(--yellow); font-size: 8px; }
 .companion-note p { display: none; }

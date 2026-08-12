@@ -661,14 +661,16 @@ function PresetManager({
           <div className="preset-list">
             {snapshot.presets.length === 0 ? <div className="preset-empty">No presets captured.</div> : snapshot.presets.map((preset, index) => (
               <article className="preset-card" key={preset.id}>
-                <button className="preset-recall" onClick={() => recallPreset(preset.id)}>
-                  <span>{String(index + 1).padStart(2, "0")}</span>
-                  <strong>{preset.name}</strong>
-                  <small>Recall</small>
-                </button>
+                <div className="preset-actions">
+                  <button className="preset-recall" onClick={() => recallPreset(preset.id)}>
+                    <span>{String(index + 1).padStart(2, "0")}</span>
+                    <strong>{preset.name}</strong>
+                    <small>Recall</small>
+                  </button>
+                  <button className="preset-overwrite" onClick={() => overwritePreset(preset.id, preset.name)} disabled={saving} aria-label={`Overwrite ${preset.name} with current live values`}>Overwrite</button>
+                </div>
                 <div className="preset-meta">
                   <code title="Companion HTTP URL">{origin}/api/companion/recall/{preset.id}?seconds={snapshot.transitionMs / 1000}</code>
-                  <button className="preset-overwrite" onClick={() => overwritePreset(preset.id, preset.name)} disabled={saving} aria-label={`Overwrite ${preset.name} with current live values`}>Overwrite</button>
                   <button onClick={() => deletePreset(preset.id)} aria-label={`Delete ${preset.name}`}>Delete</button>
                 </div>
               </article>
