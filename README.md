@@ -175,6 +175,7 @@ Additional application endpoints:
 
 | Method | Endpoint | Purpose |
 | --- | --- | --- |
+| `GET` | `/health` | Lightweight service and DMX output health (`200`, `503`, or `500`) |
 | `GET` | `/api/console/state` | Full console, output, and device state |
 | `POST` | `/api/console/live` | Set channels with `{ "values": { "1": 255 } }` |
 | `POST` | `/api/console/fixtures` | Replace the fixture patch |
@@ -185,6 +186,8 @@ Additional application endpoints:
 | `GET` | `/api/console/health` | DMX device health |
 | `GET` | `/api/console/export` | Download the complete console state as JSON |
 | `POST` | `/api/console/import` | Replace the complete console state from an exported backup |
+
+`GET /health` reads the in-memory output status and does not rescan or reopen the USB device. It returns `200` when the configured output is operational (including intentional `OPEN_DMX_DISABLED` simulation mode), `503 Service Unavailable` when the interface is missing, reconnecting, or has not sent a frame in the last two seconds, and `500 Internal Server Error` if the console engine itself cannot initialize.
 
 The **Companion setup** page also provides **Export everything** and **Import backup** controls. Import validates the complete file before replacing the current fixture patch, presets, live universe values, and transition setting.
 

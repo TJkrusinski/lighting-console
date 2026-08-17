@@ -71,6 +71,7 @@ export interface DmxStatus {
   serialNumber?: string;
   message: string;
   framesSent: number;
+  lastFrameAt?: number;
 }
 
 export interface TransitionStatus {

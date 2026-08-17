@@ -2,6 +2,7 @@ import type { Server } from "node:http";
 import path from "node:path";
 import express from "express";
 import { createApiRouter } from "./api";
+import { createHealthRouter } from "./health";
 import { shutdownConsoleEngine } from "./runtime";
 
 export interface ConsoleServerOptions {
@@ -35,6 +36,7 @@ export async function startConsoleServer(options: ConsoleServerOptions): Promise
 
   app.disable("x-powered-by");
   app.use(express.json({ limit: "10mb" }));
+  app.use(createHealthRouter());
   app.use("/api", createApiRouter());
 
   if (development) {

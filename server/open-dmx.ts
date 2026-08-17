@@ -256,6 +256,7 @@ export class OpenDmxOutput {
           throw new Error(`FTDI accepted ${bytesWritten} of ${FRAME_LENGTH} DMX bytes.`);
         }
         this.status.framesSent += 1;
+        this.status.lastFrameAt = Date.now();
         const remainingUs = FRAME_TIME_US - elapsedMicroseconds(frameStartedAt);
         if (remainingUs >= 1000) await delay(Math.floor(remainingUs / 1000));
         const finalUs = FRAME_TIME_US - elapsedMicroseconds(frameStartedAt);
@@ -275,6 +276,7 @@ export class OpenDmxOutput {
         busyWaitMicroseconds(DMX_MAB_US);
         await write(port, Buffer.from(this.frame));
         this.status.framesSent += 1;
+        this.status.lastFrameAt = Date.now();
         await delay(1);
       }
     } catch (error) {

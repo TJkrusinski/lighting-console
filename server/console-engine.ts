@@ -124,6 +124,10 @@ export class ConsoleEngine {
     };
   }
 
+  getDmxStatus() {
+    return this.output.getStatus();
+  }
+
   async setPatch(fixtures: PatchedFixture[]) {
     const clean = fixtures.map((fixture) => ({
       id: String(fixture.id),

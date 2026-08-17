@@ -40,7 +40,7 @@ export function createApiRouter() {
 
   router.get("/console/health", asyncRoute(async (_request, response) => {
     const engine = await getConsoleEngine();
-    response.json({ ok: true, dmx: engine.snapshot().dmx });
+    response.json({ ok: true, dmx: engine.getDmxStatus() });
   }));
 
   router.get("/console/export", asyncRoute(async (_request, response) => {
